@@ -26,6 +26,8 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener 
     public int n = 0;
     int planestroke = 0;
     public int moveright = 0;
+    public int tankgo=0;
+    public int tankgof=0;
     public int moveleft = 0;
     public int vplus = 0;
     public int vminus = 0;
@@ -53,6 +55,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener 
     public double boomr = 0;
     public double enemyboomr = 0;
     public double planeboom = 0;
+    public TankGoes sound1=new TankGoes();
     BufferedImage dieImage;
     BufferedImage winImage;
     BufferedImage studyImage;
@@ -93,6 +96,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener 
         tank.initialize(300, 660);
         enemytank.initialize(800, 140);
         plane.initialize(120, 100, 0);
+
         enemytank.x1 = -1;
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
@@ -103,7 +107,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener 
         level1Image = ImageIO.read(new File("src/уровень1.png"));
         level2Image = ImageIO.read(new File("src/ы (1).png"));
         level1backgroundImage = ImageIO.read(new File("src/imgonline-com-ua-Resize-LdS3Mu9x4idZoD9.png"));
-        level2backgroundImage = ImageIO.read(new File("src/scale_1200.png"));
+        level2backgroundImage = ImageIO.read(new File(/*"src/scale_1200.png"*/"src/немецкий бомбардировщик.jpg"));
         level3backgroundImage = ImageIO.read(new File("src/3background.png"));
         level0background = ImageIO.read(new File("src/level0background.png"));
         shootImage=ImageIO.read(new File("src/shootpng1.png"));
@@ -207,6 +211,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener 
                 }
 
 
+
                 //g.drawRect(50, 50, 130, 20);
                 //g.drawString("Показать траекторию", 55, 63);
                 g.setFont(new Font("Impact",Font.PLAIN, 14));
@@ -221,7 +226,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener 
 
                 if (f == 1) {
                     if (timetraektory >= 0) {
-                        ball.drawline(0.05, ball.y, ball.x, ball.y, ball.vx, ball.vy, g, -1);
+                        ball.drawline(0.001, ball.y, ball.x, ball.y, ball.vx, ball.vy, g, -1);
                         //System.out.println("jjj"+timetraektory);
                         timetraektory -= deltatime / 10.0;
                         try {
@@ -274,6 +279,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener 
                 ;
                 tank.draw(g, -1,ball.angle);
                 tank.drawhealth(g);
+                sound1.bool=tankgo;
                 if (vplus == 1) {
                     ball.v += 0.2;
                 } else if (vminus == 1) {
@@ -311,6 +317,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener 
                 g.drawImage(level1backgroundImage, 0, 0, 1500, 800, null);
                 g.setColor(Color.BLACK);                                                                           //1 level started
                 g.drawImage(shootImage,50,15,110,40,null);
+                sound1.bool=tankgo;
                 g.drawImage(showTrektoryImage,50,58,180,40,null);
                 g.drawImage(GoTo2Level,50,140,178,40,null);
                 if (goto2level==1){
@@ -574,6 +581,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener 
                 timelevel3 -= deltatime / 10.0;} else{
             g.drawImage(level2backgroundImage, 0, 0, 1500, 800, null);
             g.setColor(Color.BLACK);
+                sound1.bool=tankgo;
             g.drawImage(shootImage,50,15,110,40,null);
             g.drawImage(showTrektoryImage,50,58,180,40,null);
             g.drawImage(GoTo3Level,50,140,180,40,null);
@@ -791,6 +799,7 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener 
         else if (numberOfTheLevel == 3) {                                                                           //level3 started
             g.drawImage(level3backgroundImage, 0, 0, 1500, 800, null);
             g.setColor(Color.BLACK);
+            sound1.bool=tankgo;
             g.drawImage(shootImage,50,15,110,40,null);
             g.drawImage(showTrektoryImage,50,58,180,40,null);
             if (shootbuttonmoved==1){
@@ -1165,6 +1174,9 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener 
             f = -1;
             shootbuttonmoved=2;
             boomr = 0;
+            new Thread(() -> {
+                new TankFires().playSound("bip.wav");
+            }).start();
             try {
                 ball.initialize(ball.v, ball.angle, tank.x, (800 - tank.y));
             } catch (IOException ioException) {
@@ -1299,8 +1311,20 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener 
             if (e.getID() == KeyEvent.KEY_PRESSED) {
                 if (e.getKeyCode() == KeyEvent.VK_D) {
                     moveright = 1;
+                    tankgo=1;
+                    if (tankgof==0){
+                    new Thread(() -> {
+                        sound1.playSound("src/neiz_esten-z_uk-tanka.wav");
+                    }).start();}
+                    tankgof=1;
                 } else if (e.getKeyCode() == KeyEvent.VK_A) {
                     moveleft = 1;
+                    tankgo=1;
+                    if (tankgof==0){
+                        new Thread(() -> {
+                            sound1.playSound("src/neiz_esten-z_uk-tanka.wav");
+                        }).start();}
+                    tankgof=1;
                 } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
                     vplus = 1;
                 } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
@@ -1316,8 +1340,12 @@ public class Panel extends JPanel implements MouseListener, MouseMotionListener 
             if (e.getID() == KeyEvent.KEY_RELEASED) {
                 if (e.getKeyCode() == KeyEvent.VK_D) {
                     moveright = 0;
+                    tankgo=0;
+                    tankgof=0;
                 } else if (e.getKeyCode() == KeyEvent.VK_A) {
                     moveleft = 0;
+                    tankgo=0;
+                    tankgof=0;
                 } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
                     vplus = 0;
                 } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {

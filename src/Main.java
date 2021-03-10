@@ -15,6 +15,7 @@ public class Main {
 
         while (true) {
             frame.repaint();
+           // new TankFires().playSound("bip.wav");
           //  if (panel.f==0){
             //Thread.sleep(4);
 

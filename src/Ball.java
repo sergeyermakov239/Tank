@@ -18,12 +18,12 @@ public class Ball {
     public int f=0;
     public double y=100;
     public double dt = 0.02;
-    public double G =5;
+    public double G =10;
     public double dvx;
     public double dvy;
     public double const1 = 0.00013; //плотность
-    public double m = 5;
-    public double k =0.01;  // k0
+    public double m = 0.9;
+    public double k =0.04;  // k0 k=0.01
     BufferedImage bulletimage;
 
     public Ball(){ };
@@ -39,20 +39,33 @@ public class Ball {
         this.bulletimage= ImageIO.read(new File("src/bullets_png35596 (1).png"));
     };
     public void update (double a,double ymin,int direction){
-        dt=a;
-        dvx=-1*dt/m*k*Math.exp(-1*const1*y)*Math.sqrt(vx*vx+vy*vy)*vx;
-        dvy=-1*dt/m*(m*G+k*Math.exp(-1*const1*y)*Math.sqrt(vx*vx+vy*vy)*vy);
-        vx=vx+dvx;
-        vy=vy+dvy;
-        x=x-direction*(vx*dt);
-        y=y+(vy*dt);
-        //System.out.println(y+" "+y0);
-        if (vy<0&&Math.abs(y-ymin)<2.5&&x!=x0&&f==0){
-            xstroke=x;
-            f=1;
-            //System.out.println("kkk");
+        for (int i=0;i<3;i++) {
+            dt = a;
+        /*dvx=-1*dt/m*k*Math.exp(-1*const1*y)*Math.sqrt(vx*vx+vy*vy)*vx;
+        dvy=-1*dt/m*(m*G+k*Math.exp(-1*const1*y)*Math.sqrt(vx*vx+vy*vy)*vy);*/
+            if (y<860){
+            dvx = -1 * dt / (m * 5.0) * k * Math.pow((1 - 3.65 * Math.pow(10, -3.5) * y), 2.5) * Math.sqrt(vx * vx + vy * vy) * vx;
+            dvy = -1 * dt / (m * 5.0) * (m * G + k * Math.pow((1 - 3.65 * Math.pow(10, -3.5) * y), 2.5) * Math.sqrt(vx * vx + vy * vy) * vy);}
+            else {dvx=0;
+            dvy=-G*dt/5.0;}
+            vx = vx + dvx;
+            vy = vy + dvy;
+            x = x - direction * (vx * dt);
+            y = y + (vy * dt);
+        }
+            //System.out.println(y+" "+y0);
+            if (vy < 0 && Math.abs(y - ymin) < 2.5 && x != x0 && f == 0) {
+                xstroke = x;
+                f = 1;
+                //System.out.println("kkk");
 
-        } else {xstroke=-1; if (Math.abs(y-ymin)>2.5) {f=0;}};
+            } else {
+                xstroke = -1;
+                if (Math.abs(y - ymin) > 2.5) {
+                    f = 0;
+                }
+            }
+            ;
 
         /*if (x>1500||y<0){
             x=100;
@@ -62,6 +75,7 @@ public class Ball {
             dvx=0;
             dvy=0;
         };*/
+
     };
     public void draw(Graphics  g,int direction){
         g.setColor(Color.RED);
@@ -85,12 +99,15 @@ public class Ball {
         double vy1=e;
         double dvx1;
         double dvy1;
-        dt=a;
+        dt=0.08;
         g.setColor(Color.BLUE);
         int n=0;
         while (vy1>=0||y1>=ymin) {
-            dvx1 = -1 * dt / m * k * Math.exp(-1 * const1 * y1) * Math.sqrt(vx1 * vx1 + vy1 * vy1) * vx1;
-            dvy1 = -1 * dt / m * (m * G + k * Math.exp(-1 * const1 * y1) * Math.sqrt(vx1 * vx1 + vy1 * vy1) * vy1);
+            if (y1<860){
+            dvx1=-1*dt/(m*5.0)*k*Math.pow((1-3.65*Math.pow(10,-3.5)*y1),2.5)*Math.sqrt(vx1*vx1+vy1*vy1)*vx1;
+            dvy1=-1*dt/(m*5.0)*(m*G+k*Math.pow((1-3.65*Math.pow(10,-3.5)*y1),2.5)*Math.sqrt(vx1*vx1+vy1*vy1)*vy1);}
+            else {dvx1=0;
+            dvy1=-G*dt/5.0;}
             vx1 = vx1 + dvx1;
             vy1 = vy1 + dvy1;
             if (direction==-1){

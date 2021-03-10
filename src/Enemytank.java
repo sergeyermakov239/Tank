@@ -17,8 +17,8 @@ public class Enemytank {
     BufferedImage gun;
     public Enemytank() throws IOException {
         tankimage= ImageIO.read(new File("src/tank_PNG1320.png"));
-        tankwithoutgun=ImageIO.read(new File("src/вражеский танк без дула.png"));
-        gun=ImageIO.read(new File("src/m_дуло врага111.png"));
+        tankwithoutgun=ImageIO.read(new File("src/немецкий танк без пушки 11.png"));
+        gun=ImageIO.read(new File("src/немецкий танк пушка 1.png"));
         enemyball.initialize(1,1,x,y);
     };
     public void initialize(int a,int b){
@@ -26,7 +26,7 @@ public class Enemytank {
         y=b;
     };
     public void draw (Graphics g,int direction){
-        if (direction==1){
+        /*if (direction==1){
         g.drawImage(tankwithoutgun,(int)x,(int)(800-y),120,60,null);
             AffineTransform tx = AffineTransform.getRotateInstance(Math.atan(enemyball.vy0/enemyball.vx0), 50, 50);
             AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
@@ -36,6 +36,20 @@ public class Enemytank {
             AffineTransform tx = AffineTransform.getRotateInstance(Math.atan(enemyball.vy0/enemyball.vx0), 50, 50);
             AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
             g.drawImage(op.filter(gun, null), (int)(x+120+5-30*(1-Math.cos(Math.atan(enemyball.vy0/enemyball.vx0)))), (int)(800-(y-10+8+30*Math.sin(Math.atan(enemyball.vy0/enemyball.vx0)))),-60,60, null);
+        }*/
+        if (direction==-1){
+            g.drawImage(tankwithoutgun,(int)(x),(int)(800-y),120,60,null);
+            double angleInRadians =Math.atan(enemyball.vy0/enemyball.vx0);
+            AffineTransform tx = AffineTransform.getRotateInstance(-angleInRadians/*+0.2*/, 137, 137);
+            AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+            g.drawImage(op.filter(gun, null), (int)(x+7+74-28*(1-Math.cos(angleInRadians))), (int)(800-43-(y-20+20*Math.sin(angleInRadians)+10*Math.sin(angleInRadians)*Math.sin(angleInRadians))),80,80, null);
+        }
+        else if (direction==1){
+            g.drawImage(tankwithoutgun,(int)(x+120),(int)(800-y),-120,60,null);
+            double angleInRadians =Math.atan(enemyball.vy0/enemyball.vx0);
+            AffineTransform tx = AffineTransform.getRotateInstance(-angleInRadians, 137, 137);
+            AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+            g.drawImage(op.filter(gun, null), (int)(x-7+25+(74-28*(1-Math.cos(3.1416-angleInRadians)))), (int)(800-43-(y-20+20*Math.sin(3.1416-angleInRadians)+10*Math.sin(3.1416-angleInRadians)*Math.sin(3.1416-angleInRadians))),-80,80, null);
         }
     };
     public void move(double dt,double a,int direction){
@@ -64,6 +78,9 @@ public class Enemytank {
                 v = Math.abs(a-x-5/*+90*/) * enemyball.k / enemyball.m / Math.cos(angle);
             }
             enemyball.initialize(v,angle,(x+(direction+1)*60),y);
+            new Thread(() -> {
+                new TankFires().playSound("bip.wav");
+            }).start();
         };
 
         enemyball.update(dt,ymin, direction);
